@@ -6,40 +6,80 @@ import {
   Button,
   Modal,
   StyleSheet,
-  Image
+  Alert,
 } from 'react-native';
+
+import Header from '../../Components/Header';
 
 const VerificationScreen = (props) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [otp, setOtp] = useState(''); // State to store the received OTP
 
-  const handleMobileNumberChange = (newNumber) => {
-    setMobileNumber(newNumber);
-  };
+  // const handleMobileNumberChange = (newNumber) => {
+  //   setMobileNumber(newNumber);
+  // };
 
-  const handleSendOtpPress = () => {
-    // Simulate sending OTP (replace with actual API call)
-    setOtp('123456'); // Set a sample OTP for demonstration
-    setOtpModalVisible(true);
-  };
+  // const handleSendOtpPress = () => {
+  //   // Simulate sending OTP (replace with actual API call)
+  //   setOtp('123456'); // Set a sample OTP for demonstration
+  //   setOtpModalVisible(true);
+  // };
 
-  const handleOtpVerification = () => {
-    // Handle OTP verification logic here
-    // console.log('OTP entered:', otp);
+  const handleOtpVerification = async (mobileNumber) => {
+    const api_url = "http://192.168.1.7:8000/userdata/login/"
+    var response;
+    try {
+      response = await fetch(api_url, {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          phone_number: mobileNumber,
+          otp: otp,
+        }),
+      });
+      const data = await response.json();
+      console.log(data);
+  } catch(error) {
+    console.log('Error veryfying OTP',error);
+  } 
 
-    if (otp === '123456') {
-      // OTP verification successful
-      // ...
-    } else {
-      // OTP verification failed
-      // ...
+  if(response.status === 200){
+    props.checkOtp();
+    props.login();
+    setMobileNumber('');
+  } else{
+    props.checkOtp();
+  }
+};
+
+  function handleInvalidOtp(){
+    setOtpModalVisible(false);
+    setOtp('');
+  }
+
+  const generateOTP = async (mobileNumber) => {
+      //Api call to generate otp in the backend
+    try {
+      const response = await fetch(`http://192.168.1.7:8000/userdata/getotp?phone_number=${encodeURIComponent(mobileNumber)}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      console.log(data);  // Process response data
+    } catch (error) {
+      console.error('Error generating OTP:', error);
     }
-  };
 
+    setOtpModalVisible(true);
+
+  };
+  
   return (
     <View style={styles.container}>
-      <View style={{alignItems:'center', backgroundColor:'#86B6F6',marginTop:-390 }} ><View style={{borderWidth:1, width:400}} /><Image style={styles.logo} source={require('../../assets/digitalCare__logo.jpg')}/><View style={{borderWidth:1, width:400}} /></View>
+      <Header />
 
       <View style={{marginTop:-200}}>
         <Text style={{fontWeight:'bold', fontSize:20, marginBottom:5}}>Enter Mobile Number:</Text>
@@ -52,7 +92,7 @@ const VerificationScreen = (props) => {
             maxLength={10}
         />
 
-        <Button title="Send OTP" onPress={handleSendOtpPress} />
+        <Button title="Send OTP" onPress={() => generateOTP(mobileNumber)} />
       </View>
       
       
@@ -65,7 +105,8 @@ const VerificationScreen = (props) => {
             keyboardType="numeric"
             style={styles.otpInput}
           />
-          <Button title="Verify OTP" onPress={props.checkOtp} />
+          <Button title="Verify OTP" onPress={() => handleOtpVerification(mobileNumber)} />
+          <Button title="Back" onPress={() => {setOtpModalVisible(false); setOtp('')}} />
         </View>
       </Modal>
     </View>
@@ -77,6 +118,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'space-evenly',
+    marginTop:-400,
   },
   input: {
     borderWidth: 1,
@@ -92,14 +134,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
   },
-  logo: {
-    resizeMode:'contain',
-    height:70,
-    width:200,
-    // margin:10,
-    // borderWidth:1,
-    borderColor:'red',
-  },
+  
 });
 
 export default VerificationScreen;

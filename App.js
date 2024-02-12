@@ -6,7 +6,6 @@ import Profile from './Screens/profile-page/Profile';
 import RegistraionPage from './Screens/registration-page/RegistrationPage';
 
 export default function App() {
-  
   const [isLogIn, setIsLogIn] = useState(false);
   const [isOtpValid, setIsOtpValid] = useState(false);
 
@@ -26,14 +25,19 @@ export default function App() {
     setIsOtpValid(false);
   }
 
+  console.log(`islogin=${isLogIn}`);
+
   return (
     <View style={styles.container}>
-    {!isOtpValid && <OtpPage checkOtp={otpHandler}/>}
+    {console.log(`isotpvalid=${isOtpValid}`)}
+    
+    {!isOtpValid && <OtpPage checkOtp={otpHandler} uncheckOtp={uncheckOtp} login={logInHandler}/>}
     {isOtpValid && (
       <>
-        {isLogIn ? <Profile onLogOut={logOutHandler} /> : <RegistraionPage onLogIn={logInHandler} uncheckOtp={uncheckOtp}/>}
+        {isLogIn ? <Profile onLogOut={logOutHandler} uncheckOtp={uncheckOtp} /> : <RegistraionPage onLogIn={logInHandler} uncheckOtp={uncheckOtp}/>}
       </>
     )}
+
   </View>
   );
 }

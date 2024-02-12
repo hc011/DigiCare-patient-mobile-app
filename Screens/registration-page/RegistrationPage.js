@@ -7,17 +7,56 @@ import {
   TouchableOpacity,
   Alert,
   Button,
+  ScrollView
 } from 'react-native';
 
-import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { format } from 'date-fns';
+
 import validator from 'validator';
 
 const RegistrationPage = (props) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [gender, setGender] = useState('');
+  // const [gender, setGender] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [email, setEmail] = useState('');
+  const [dob, setDob] = useState(new Date());
+  const [password, setPassword] = useState('')
+
+  const [showDatePicker, setShowDatePicker] = useState(false); 
+
+  const dateChangeHandler = (event, selectedDate) => {
+    const currentDate = selectedDate || setDob;
+    setShowDatePicker(false);
+    setDob(currentDate);
+  }
+
+  const registerCall = async() => {
+      const api_url = "http://192.168.1.7:8000/userdata/register/"
+      var response;
+      const DOB = format(dob, 'yyyy-MM-dd');
+      try {
+        response = await fetch(api_url, {
+          method: 'POST',
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            phone_number: mobileNumber,
+            first_name: firstName,
+            last_name: lastName,
+            dob: DOB,
+            email: email,
+            password: password
+          }),
+        });
+        const data = await response.json();
+        console.log(data);
+    } catch(error) {
+      console.log('Error veryfying OTP',error);
+    } 
+  }
 
   const handleRegister = () => {
 
@@ -25,9 +64,10 @@ const RegistrationPage = (props) => {
     console.log('Registration data:', {
       firstName,
       lastName,
-      gender,
+      dob,
       mobileNumber,
       email,
+      password
     });
 
     if (!validator.isEmail(email)) {
@@ -42,12 +82,15 @@ const RegistrationPage = (props) => {
         return;
     }
 
+    //register api call here
+    registerCall();
+
     props.onLogIn();
 
   };
   
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Registration</Text>
 
       <TextInput
@@ -63,8 +106,25 @@ const RegistrationPage = (props) => {
         value={lastName}
         onChangeText={setLastName}
       />
-      
-      <View style={styles.gender}>
+      <View style={styles.datePicker}>
+      <View style={styles.dobText}><Text style={{color:'grey'}}>{format(dob, 'dd-MM-yyyy')}</Text></View>
+      <TouchableOpacity onPress={()=>{setShowDatePicker(true)}} style={styles.datePickerButton}>
+        <Text style={styles.buttonText} >Date of birth</Text>
+      </TouchableOpacity>
+      </View>
+
+      {showDatePicker && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={dob}
+          mode="date"
+          is24Hour={true}
+          display="default"
+          onChange={dateChangeHandler}
+        />
+      )}
+
+      {/* <View style={styles.gender}>
         <Picker
             selectedValue={gender}
             onValueChange={setGender}
@@ -73,7 +133,7 @@ const RegistrationPage = (props) => {
             <Picker.Item label="Female" value="female" />
             <Picker.Item label="Other" value="other" />
         </Picker>
-      </View>
+      </View> */}
       <TextInput
         style={styles.input}
         keyboardType="phone-pad"
@@ -91,11 +151,19 @@ const RegistrationPage = (props) => {
         onChangeText={setEmail}
       />
 
+      <TextInput
+        style={styles.input}
+        secureTextEntry={true}
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+      />
+
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
       <Button onPress={props.uncheckOtp} title='back'></Button>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -112,13 +180,13 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: 'gray',
-    padding: 13,
+    borderColor: 'grey',
+    padding: 10,
   },
   gender : {
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: 'grey',
     borderWidth: 1,
     borderColor: 'grey',
   },
@@ -133,6 +201,29 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
+  datePicker: {
+    flexDirection:'row',
+    // borderWidth:2,
+    marginBottom:10,
+    alignItems:'center',
+  },
+  dobText : {
+    height:47,
+    borderWidth: 1,
+    borderColor: 'grey',
+    padding: 9.5,
+    justifyContent:'center',
+    width:100,
+    // alignItems:'center'
+  },
+  datePickerButton:{
+    backgroundColor: 'blue',
+    padding: 10,
+    marginLeft:10,
+    justifyContent:'center',
+    borderRadius: 5,
+
+  }
 });
 
 export default RegistrationPage;

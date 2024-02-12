@@ -4,23 +4,25 @@ import {
   View, 
   TouchableOpacity, 
   Image, 
-  useWindowDimensions, 
-  SafeAreaView, 
-  Platform,
-  StatusBar
 } from 'react-native';
+import Header from '../../Components/Header';
 import HTML from 'react-native-render-html'
+
 
 const Profile = (props) => {
     const doctorInfo= `<p><b>Name: </b>Dr. Alex Martin \n <b>Designation: </b>Surgeon</p>`;
-    const {width} = useWindowDimensions();
+
+    function logoutHandler() {
+      props.onLogOut();
+      props.uncheckOtp();
+    }
 
     return (
     <View style={styles.container}>
-      <StatusBar />
-      <View style={{alignItems:'center', backgroundColor:'#86B6F6' }} ><View style={{borderWidth:1, width:400}} /><Image style={styles.logo} source={require('../../assets/digitalCare__logo.jpg')}/><View style={{borderWidth:1, width:400}} /></View>
+      {/* <StatusBar /> */}
+      <Header />
       
-      <View style={{marginTop:-50}}><Text style={{fontWeight:'bold', fontSize:26}}>Profile</Text></View>
+      <Text style={{fontWeight:'bold', fontSize:26, marginTop:-50}}>Profile</Text>
 
       <View style={styles.doctorCard}>
         <View style={styles.doctorDP}>
@@ -33,13 +35,15 @@ const Profile = (props) => {
             <Text style={{fontWeight:'bold'}}>Name: <Text style={{fontWeight:'normal'}}>Dr. Alex martin{"\n"}</Text></Text> 
             <Text style={{fontWeight:'bold'}}>Designation: <Text style={{fontWeight:'normal'}}>Surgeon</Text></Text> 
           </Text> */}
-          <HTML source={{html: doctorInfo}} contentWidth={width}></HTML>
+
+          <HTML source={{html: doctorInfo}} contentWidth={200} />
+
         </View>
         </View>
 
       </View>
 
-      <TouchableOpacity style={styles.bookButton} onPress={props.onLogOut}>
+      <TouchableOpacity style={styles.bookButton} onPress={logoutHandler}>
         <Text style={{color:'white', fontSize:25}}>Log Out</Text> 
       </TouchableOpacity>
     </View>
@@ -49,21 +53,11 @@ const Profile = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        marginTop:-120,
-        paddingTop: Platform.OS == 'android'? StatusBar.currentHeight:0
+        marginTop:-95,
+        // paddingTop: Platform.OS == 'android'? StatusBar.currentHeight:0
       },
-      logo: {
-        resizeMode:'contain',
-        height:70,
-        width:200,
-        // margin:10,
-        // borderWidth:1,
-        
-      },
-    
       doctorCard: {
         height:350,
         width:250,
@@ -82,7 +76,6 @@ const styles = StyleSheet.create({
         // borderWidth:1,
         borderRadius:10,
         borderColor:'black',
-        margin: 10,
         marginVertical:30,
         justifyContent:'center',
         alignItems:'center',
