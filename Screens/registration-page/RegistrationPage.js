@@ -10,6 +10,8 @@ import {
   ScrollView
 } from 'react-native';
 
+import Header from '../../Components/Header';
+
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
 
@@ -33,7 +35,7 @@ const RegistrationPage = (props) => {
   }
 
   const registerCall = async() => {
-      const api_url = "http://192.168.1.7:8000/userdata/register/"
+      const api_url = "http://192.168.141.5:8000/userdata/register/"
       var response;
       const DOB = format(dob, 'yyyy-MM-dd');
       try {
@@ -70,18 +72,29 @@ const RegistrationPage = (props) => {
       password
     });
 
-    if (!validator.isEmail(email)) {
-        Alert.alert('Invalid Email', 'Please enter a valid email address.');
-        setEmail("")
-        return;
+    
+    if( (!firstName.trim() 
+    || !lastName.trim() 
+    || dob.toISOString().slice(0,10) === (new Date()).toISOString().slice(0,10)
+    || !mobileNumber.trim()
+    || !email.trim()
+    || !password.trim())){
+      Alert.alert('Invalid details','Please enter valid inputs')
+      return;
     }
 
-    if (!validator.isInt(mobileNumber)) {
-        Alert.alert('Invalid mobile number', 'Please enter a valid mobile number.');
-        setMobileNumber("")
-        return;
-    }
+  else if (!validator.isEmail(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      setEmail("")
+      return;
+  }
 
+  else if (mobileNumber.length != 10) {
+      Alert.alert('Invalid mobile number', 'Please enter a valid mobile number.');
+      setMobileNumber("")
+      return;
+  }
+    
     //register api call here
     registerCall();
 
@@ -90,7 +103,10 @@ const RegistrationPage = (props) => {
   };
   
   return (
+    <View>
+      <Header/>
     <ScrollView style={styles.container}>
+
       <Text style={styles.title}>Registration</Text>
 
       <TextInput
@@ -164,13 +180,28 @@ const RegistrationPage = (props) => {
       </TouchableOpacity>
       <Button onPress={props.uncheckOtp} title='back'></Button>
     </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'white',
     padding: 20,
-    marginTop: 30
+    marginTop: 30,
+    borderWidth:1,
+    borderColor:'grey',
+    borderRadius:5,
+    width:'90%',
+    alignSelf:'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   title: {
     fontSize: 24,

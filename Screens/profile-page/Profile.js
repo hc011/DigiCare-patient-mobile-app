@@ -3,14 +3,28 @@ import {
   Text, 
   View, 
   TouchableOpacity, 
-  Image, 
+  Image,
+  ScrollView 
 } from 'react-native';
 import Header from '../../Components/Header';
-import HTML from 'react-native-render-html'
+import SearchBar from '../../Components/SearchBar';
+import ClinicCard from '../../Components/ClinicCard';
 
+const cardData = [
+  { id: 1, clinicName: 'Maharaja raj bahadur clinic', clinicTiming: '10:00 AM - 8:00 PM', clinicRate: '250 Rs', clinicRating:'3.5' },
+  { id: 2, clinicName: 'Maharaja raj bahadur clinic', clinicTiming: '10:00 AM - 8:00 PM', clinicRate: '250 Rs', clinicRating:'3.5' },
+  { id: 3, clinicName: 'Maharaja raj bahadur clinic', clinicTiming: '10:00 AM - 8:00 PM', clinicRate: '250 Rs', clinicRating:'3.5' },
+  { id: 4, clinicName: 'Maharaja raj bahadur clinic', clinicTiming: '10:00 AM - 8:00 PM', clinicRate: '250 Rs', clinicRating:'3.5' },
+  { id: 5, clinicName: 'Maharaja raj bahadur clinic', clinicTiming: '10:00 AM - 8:00 PM', clinicRate: '250 Rs', clinicRating:'3.5' },
+  { id: 6, clinicName: 'Maharaja raj bahadur clinic', clinicTiming: '10:00 AM - 8:00 PM', clinicRate: '250 Rs', clinicRating:'3.5' },
+  { id: 7, clinicName: 'Maharaja raj bahadur clinic', clinicTiming: '10:00 AM - 8:00 PM', clinicRate: '250 Rs', clinicRating:'3.5' },
+  { id: 8, clinicName: 'Maharaja raj bahadur clinic', clinicTiming: '10:00 AM - 8:00 PM', clinicRate: '250 Rs', clinicRating:'3.5' },
+  { id: 9, clinicName: 'Maharaja raj bahadur clinic', clinicTiming: '10:00 AM - 8:00 PM', clinicRate: '250 Rs', clinicRating:'3.5' },
+  { id: 10, clinicName: 'Maharaja raj bahadur clinic', clinicTiming: '10:00 AM - 8:00 PM', clinicRate: '250 Rs', clinicRating:'3.5' },
+
+];
 
 const Profile = (props) => {
-    const doctorInfo= `<p><b>Name: </b>Dr. Alex Martin \n <b>Designation: </b>Surgeon</p>`;
 
     function logoutHandler() {
       props.onLogOut();
@@ -18,85 +32,67 @@ const Profile = (props) => {
     }
 
     return (
-    <View style={styles.container}>
-      {/* <StatusBar /> */}
-      <Header />
-      
-      <Text style={{fontWeight:'bold', fontSize:26, marginTop:-50}}>Profile</Text>
-
-      <View style={styles.doctorCard}>
-        <View style={styles.doctorDP}>
-          <Image style={{height:'100%', width:'100%'}} source={require('../../assets/doctorDP__icon.jpg')} />
+      <View style={{flex:1}}>
+        <Header />
+        <TouchableOpacity style={styles.bookButton} onPress={logoutHandler}>
+            <Text style={{color:'white', fontSize:10}}>Log Out</Text> 
+          </TouchableOpacity>
+        <SearchBar>Search doctor... </SearchBar>
+        <View style={styles.listFade}></View>
+        <ScrollView>
+        <View style={styles.container}>
+          <ClinicCard clinicName='Maharaja raj bahadur clinic' clinicTiming='10:00 AM - 8:00 PM' clinicRate='100 Rs' clinicRating='3.5' />
+          
+          {cardData.map((item) => (
+          <ClinicCard
+            key={item.id} // Always use a unique key when mapping over an array to render a list of components
+            clinicName={item.clinicName}
+            clinicTiming={item.clinicTiming}
+            clinicRate={item.clinicRate}
+            clinicRating={item.clinicRating}
+          />
+          ))}
         </View>
-
-        <View style={{alignItems:'center', justifyContent:'flex-end',marginBottom:40}}>
-        <View style={styles.doctorDetails}>
-          {/* <Text style={{fontSize:16}}>
-            <Text style={{fontWeight:'bold'}}>Name: <Text style={{fontWeight:'normal'}}>Dr. Alex martin{"\n"}</Text></Text> 
-            <Text style={{fontWeight:'bold'}}>Designation: <Text style={{fontWeight:'normal'}}>Surgeon</Text></Text> 
-          </Text> */}
-
-          <HTML source={{html: doctorInfo}} contentWidth={200} />
-
-        </View>
-        </View>
-
+        </ScrollView>
       </View>
-
-      <TouchableOpacity style={styles.bookButton} onPress={logoutHandler}>
-        <Text style={{color:'white', fontSize:25}}>Log Out</Text> 
-      </TouchableOpacity>
-    </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        marginTop:-95,
-        // paddingTop: Platform.OS == 'android'? StatusBar.currentHeight:0
-      },
-      doctorCard: {
-        height:350,
-        width:250,
-        padding:20,
-        borderWidth:2,
-        borderRadius:10,
-        borderColor:'black',
-        // marginBottom: 60,
-        // marginTop:-60,
+        // alignItems: 'center',
+        marginTop:20,
+        marginBottom:20,
         alignItems:'center',
-        justifyContent:'center',
-      },
-      doctorDP: { 
-        height:150,
-        width:150,
-        // borderWidth:1,
-        borderRadius:10,
-        borderColor:'black',
-        marginVertical:30,
-        justifyContent:'center',
-        alignItems:'center',
-        // flex:1,
-      },
-    
-      doctorDetails: {
-        // borderWidth:1
-        // flex:2
       },
       bookButton: {
-        height: 60,
-        width:110,
+        height: 30,
+        width:60,
         borderRadius:35,
-        borderWidth:2,
+        borderWidth:0.5,
         borderColor:'black',
         backgroundColor:'#0f5cc6',
         justifyContent:'center',
         alignItems:'center',
-        
+        marginTop:-50,
+        alignSelf:'flex-end',
+        marginRight:5,
+        marginBottom:40
       },
+      listFade: {
+        borderWidth:0.5,
+        width:'100%', 
+        borderColor:'grey',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 8
+      }
 })
 
 export default Profile;
