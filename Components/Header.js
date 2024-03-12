@@ -4,7 +4,7 @@ const Header = () => {
   return (
   <View style={styles.container} >
     <View style={{borderWidth:1, width:400}} />
-      <Image style={styles.logo} source={require('../assets/digitalCare__logo.jpg')}/>
+      <Image style={styles.logo} source={require('../assets/DigiCare__logo.png')}/>
     <View style={{borderWidth:1, width:400}} />
   </View>
  );

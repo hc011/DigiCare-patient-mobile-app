@@ -6,6 +6,7 @@ import Profile from './Screens/profile-page/Profile';
 import RegistraionPage from './Screens/registration-page/RegistrationPage';
 import Header from './Components/Header';
 import SearchBar from './Components/SearchBar';
+import DetailedProfile from './Screens/profile-detailed-page/DetailedProfile'
 
 export default function App() {
   const [isLogIn, setIsLogIn] = useState(false);
@@ -39,9 +40,9 @@ export default function App() {
         {isLogIn ? <Profile onLogOut={logOutHandler} uncheckOtp={uncheckOtp} /> : <RegistraionPage onLogIn={logInHandler} uncheckOtp={uncheckOtp}/>}
       </>
     )}
+
     {/* <Profile /> */}
     
-
   </View>
   );
 }

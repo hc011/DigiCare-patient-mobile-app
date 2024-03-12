@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   Alert,
   Button,
-  ScrollView
+  ScrollView,
+  Pressable
 } from 'react-native';
 
 import Header from '../../Components/Header';
@@ -16,6 +17,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
 
 import validator from 'validator';
+import {ip} from '../../assets/IPAdress'
 
 const RegistrationPage = (props) => {
   const [firstName, setFirstName] = useState('');
@@ -35,7 +37,7 @@ const RegistrationPage = (props) => {
   }
 
   const registerCall = async() => {
-      const api_url = "http://192.168.141.5:8000/userdata/register/"
+      const api_url = "http://"+ip+":8000/userdata/register/"
       var response;
       const DOB = format(dob, 'yyyy-MM-dd');
       try {
@@ -122,8 +124,9 @@ const RegistrationPage = (props) => {
         value={lastName}
         onChangeText={setLastName}
       />
+
       <View style={styles.datePicker}>
-      <View style={styles.dobText}><Text style={{color:'grey'}}>{format(dob, 'dd-MM-yyyy')}</Text></View>
+      <View style={[styles.dobText, styles.input]}><Text style={{color:'grey'}}>{format(dob, 'dd-MM-yyyy')}</Text></View>
       <TouchableOpacity onPress={()=>{setShowDatePicker(true)}} style={styles.datePickerButton}>
         <Text style={styles.buttonText} >Date of birth</Text>
       </TouchableOpacity>
@@ -139,6 +142,7 @@ const RegistrationPage = (props) => {
           onChange={dateChangeHandler}
         />
       )}
+
 
       {/* <View style={styles.gender}>
         <Picker
@@ -175,10 +179,12 @@ const RegistrationPage = (props) => {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Register</Text>
+      <Pressable style={styles.button} onPress={handleRegister} >
+        <Text style={[styles.buttonText,{fontSize:16}]}>Register</Text>
+      </Pressable>
+      <TouchableOpacity style={[styles.button, {backgroundColor:'lightblue'}]}  onPress={props.uncheckOtp} touchableNative >
+        <Text style={[styles.buttonText,{fontSize:16}]}>Back</Text>
       </TouchableOpacity>
-      <Button onPress={props.uncheckOtp} title='back'></Button>
     </ScrollView>
     </View>
   );
@@ -191,7 +197,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderWidth:1,
     borderColor:'grey',
-    borderRadius:5,
+    borderRadius:18,
     width:'90%',
     alignSelf:'center',
     shadowColor: '#000',
@@ -213,6 +219,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'grey',
     padding: 10,
+    borderRadius:30,
   },
   gender : {
     marginBottom: 10,
@@ -222,15 +229,16 @@ const styles = StyleSheet.create({
     borderColor: 'grey',
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: '#5B8DD3',
     padding: 15,
     borderRadius: 5,
-    marginTop: 20,
-    marginBottom:20
+    marginTop: 10,
+    marginBottom:5,
   },
   buttonText: {
-    color: 'white',
+    color: 'black',
     textAlign: 'center',
+    
   },
   datePicker: {
     flexDirection:'row',
@@ -245,15 +253,14 @@ const styles = StyleSheet.create({
     padding: 9.5,
     justifyContent:'center',
     width:100,
-    // alignItems:'center'
   },
   datePickerButton:{
-    backgroundColor: 'blue',
+    backgroundColor: '#5B8DD3',
     padding: 10,
     marginLeft:10,
+    marginBottom:10,
     justifyContent:'center',
     borderRadius: 5,
-
   }
 });
 

@@ -11,16 +11,17 @@ import {
 } from 'react-native';
 
 import Header from '../../Components/Header';
+import {ip} from '../../assets/IPAdress'
 
 const VerificationScreen = (props) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [otp, setOtp] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // State to manage loading state
+  const [isLoading, setIsLoading] = useState(false); 
 
   const handleOtpVerification = async () => {
-    setIsLoading(true); // Start loading
-    const api_url = "http://192.168.141.5:8000/userdata/login/";
+    setIsLoading(true);
+    const api_url = "http://"+ip+":8000/userdata/login/";
     try {
       const response = await fetch(api_url, {
         method: 'POST',
@@ -50,12 +51,12 @@ const VerificationScreen = (props) => {
   };
 
   const generateOTP = async () => {
-    setIsLoading(true); // Start loading
+    setIsLoading(true); 
     const controller = new AbortController(); // Create a new instance of AbortController
     const timeoutId = setTimeout(() => controller.abort(), 10000); // Set timeout to abort the fetch request after 10 seconds
   
     try {
-      const response = await fetch(`http://192.168.141.5:8000/userdata/getotp?phone_number=${encodeURIComponent(mobileNumber)}`, {
+      const response = await fetch(`http://${ip}:8000/userdata/getotp?phone_number=${encodeURIComponent(mobileNumber)}`, {
         signal: controller.signal, // Pass the AbortController's signal to the fetch request
       });
       clearTimeout(timeoutId); // Clear the timeout if the fetch completes in time
@@ -78,11 +79,9 @@ const VerificationScreen = (props) => {
       }
       setIsLoading(false);
     } finally {
-
-    }
+      }
   };
   
-
   return (
     <View style={styles.container}>
       <Header />
@@ -113,18 +112,21 @@ const VerificationScreen = (props) => {
         >
           
         <View style={styles.modalContent}>
-          <View style={{alignItems:'center'}}>
-          <Text style={styles.label}>Enter OTP:</Text>
+
+          <View style={{alignItems:'center', marginBottom:20}}>
+          <Text style={[styles.label, {fontSize:24}]}>Enter OTP</Text>
           <TextInput
             value={otp}
             onChangeText={setOtp}
             keyboardType="numeric"
             style={[styles.input, {fontSize:20}, {textAlign:'center'}, {width:80}]}
             maxLength={4}
+            placeholder='_ _ _ _'
           />
           </View>
+
           <View style={[{flexDirection:'row'},{justifyContent:'space-evenly'},{width:'100%'}]}>
-          <TouchableOpacity style={[styles.button, styles.buttonOutline, {width:100}]} onPress={() => {setOtpModalVisible(false);setIsLoading(false)}}>
+          <TouchableOpacity style={[styles.button, {width:100,backgroundColor:'lightblue'}]} onPress={() => {setOtpModalVisible(false);setIsLoading(false)}}>
             <Text style={styles.buttonOutlineText}>Back</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button,{width:100}]} onPress={handleOtpVerification}>
@@ -146,8 +148,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    width: '80%', // Use a percentage to control width for different screen sizes
-    marginTop: '10%'
+    // width: '80%',
+    // marginTop: '10%',
+    backgroundColor:'white',
+    padding:20,
+    marginTop: 30,
+    borderWidth:1,
+    borderColor:'grey',
+    borderRadius:18,
+    width:'90%',
+    alignSelf:'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   label: {
     fontWeight: 'bold',
@@ -163,25 +181,20 @@ const styles = StyleSheet.create({
     fontSize:16
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#5B8DD3',
     padding: 12,
     borderRadius: 5,
     alignItems: 'center',
     marginBottom: 5,
   },
   buttonText: {
-    color: '#ffffff',
-    fontSize: 14,
+    color: 'black',
+    fontSize: 16,
     // fontWeight: 'bold',
   },
-  buttonOutline: {
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: '#007bff',
-  },
   buttonOutlineText: {
-    color: '#007bff',
-    fontSize: 14,
+    color: 'black',
+    fontSize: 16,
     // fontWeight: 'bold',
   },
   overlay: {
@@ -201,8 +214,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5, // Only applies to Android
-    marginTop: '50%', // Adjust based on your needs
+    elevation: 15,
+    marginTop: '50%', 
   },
   otpInput: {
     borderWidth: 1,
