@@ -1,11 +1,12 @@
 import { View, StyleSheet, Image, StatusBar, Platform } from 'react-native';
 
-const Header = () => {
+const Header = (props) => {
   return (
   <View style={styles.container} >
-    <View style={{borderWidth:1, width:400}} />
+    <View style={{borderWidth:1, width:'100%'}} />
       <Image style={styles.logo} source={require('../assets/DigiCare__logo.png')}/>
-    <View style={{borderWidth:1, width:400}} />
+    <View style={{borderWidth:1, width:'100%'}} />
+    {props.rc}
   </View>
  );
 };

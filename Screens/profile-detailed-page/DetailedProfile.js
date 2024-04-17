@@ -27,7 +27,6 @@ const ClinicDetailPage = () => {
     
     return (
         <View style={styles.container}>
-          <Header />
           <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
             <Image source={require('../../assets/doctorDP__icon.jpg')} style={styles.clinicImage} />
             <Text style={styles.clinicName}>{clinicInfo.clinicName}</Text>

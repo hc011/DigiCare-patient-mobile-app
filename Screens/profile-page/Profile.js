@@ -36,27 +36,21 @@ const Profile = (props) => {
     //   props.onLogOut();
     //   props.uncheckOtp();
     // }
+    const pressHandler = () => {
+      props.navigation.navigate('Clinic');
+    }
 
     return (
       <View style={{flex:1}}>
-        <View style={styles.header}>
-          <Header />
-          {/* <TouchableOpacity style={styles.bookButton} onPress={logoutHandler}>
-              <Text style={{color:'white', fontSize:10}}>Log Out</Text> 
-            </TouchableOpacity> */} 
-            <View  style={styles.person}>
-              <Icon style={{marginLeft:-1, marginTop:-1.2}} name="person-circle" size={40} color="black" />
-            </View>
-        </View>
 
         <SearchBar>Search doctor... </SearchBar>
         <View style={styles.listFade}></View>
 
         <ScrollView>
         <View style={styles.container}>
-          
           {cardData.map((item, index) => (
-          <Pressable  
+          <Pressable
+            onPress={pressHandler}  
             key={index} 
             onPressIn={()=>setPressedIndex(index)}
             onPressOut={()=>setPressedIndex(null)}

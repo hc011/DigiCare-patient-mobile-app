@@ -11,13 +11,12 @@ import {
   Pressable
 } from 'react-native';
 
-import Header from '../../Components/Header';
-
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
 
 import validator from 'validator';
 import {ip} from '../../assets/IPAdress'
+import { useNavigation } from '@react-navigation/native';
 
 const RegistrationPage = (props) => {
   const [firstName, setFirstName] = useState('');
@@ -55,8 +54,10 @@ const RegistrationPage = (props) => {
             password: password
           }),
         });
+
         const data = await response.json();
         console.log(data);
+
     } catch(error) {
       console.log('Error veryfying OTP',error);
     } 
@@ -100,13 +101,13 @@ const RegistrationPage = (props) => {
     //register api call here
     registerCall();
 
-    props.onLogIn();
+    // props.onLogIn();
+    props.navigation.navigate('Home');
 
   };
   
   return (
     <View>
-      <Header/>
     <ScrollView style={styles.container}>
 
       <Text style={styles.title}>Registration</Text>
@@ -182,7 +183,7 @@ const RegistrationPage = (props) => {
       <Pressable style={styles.button} onPress={handleRegister} >
         <Text style={[styles.buttonText,{fontSize:16}]}>Register</Text>
       </Pressable>
-      <TouchableOpacity style={[styles.button, {backgroundColor:'lightblue'}]}  onPress={props.uncheckOtp} touchableNative >
+      <TouchableOpacity style={[styles.button, {backgroundColor:'lightblue'}]}  onPress={useNavigation().goBack()} touchableNative >
         <Text style={[styles.buttonText,{fontSize:16}]}>Back</Text>
       </TouchableOpacity>
     </ScrollView>

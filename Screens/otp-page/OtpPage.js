@@ -7,11 +7,11 @@ import {
   Modal,
   StyleSheet,
   ActivityIndicator,
-  Alert
+  Alert,
 } from 'react-native';
 
-import Header from '../../Components/Header';
 import {ip} from '../../assets/IPAdress'
+import { useNavigation } from '@react-navigation/native';
 
 const VerificationScreen = (props) => {
   const [mobileNumber, setMobileNumber] = useState('');
@@ -21,6 +21,7 @@ const VerificationScreen = (props) => {
 
   const handleOtpVerification = async () => {
     setIsLoading(true);
+    console.log(mobileNumber)
     const api_url = "http://"+ip+":8000/userdata/login/";
     try {
       const response = await fetch(api_url, {
@@ -34,10 +35,21 @@ const VerificationScreen = (props) => {
         }),
       });
       if (response.status === 200) {
-        props.checkOtp();
-        props.login();
-      } else {
-        props.checkOtp();
+        // props.checkOtp();
+        // props.login();
+        // console.log('if')
+        props.navigation.navigate('Profile')
+      } 
+      else if(response.status === 400){
+        props.navigation.navigate('Registration');
+      }
+      else {
+        // Alert.alert('Incorrect OTP, Please try again');
+        setOtpModalVisible(false);
+        setIsLoading(false);
+        setMobileNumber('');
+        setOtp('');
+        // console.log('else')
       }
     } catch(error) {
       console.error('Error verifying OTP:', error);
@@ -45,7 +57,7 @@ const VerificationScreen = (props) => {
     } finally {
       setIsLoading(false); // End loading
       setOtpModalVisible(false); // Close the modal regardless of the outcome
-      setMobileNumber(''); // Optionally clear the mobile number
+      // setMobileNumber(''); // Optionally clear the mobile number
       setOtp('');
     }
   };
@@ -84,7 +96,6 @@ const VerificationScreen = (props) => {
   
   return (
     <View style={styles.container}>
-      <Header />
       <View style={styles.content}>
         <Text style={styles.label}>Enter Mobile Number:</Text>
         <TextInput
@@ -101,6 +112,7 @@ const VerificationScreen = (props) => {
           <TouchableOpacity style={styles.button} onPress={generateOTP}>
             <Text style={styles.buttonText}>Send OTP</Text>
           </TouchableOpacity>
+          
         )}
       </View>
 
@@ -126,7 +138,7 @@ const VerificationScreen = (props) => {
           </View>
 
           <View style={[{flexDirection:'row'},{justifyContent:'space-evenly'},{width:'100%'}]}>
-          <TouchableOpacity style={[styles.button, {width:100,backgroundColor:'lightblue'}]} onPress={() => {setOtpModalVisible(false);setIsLoading(false)}}>
+          <TouchableOpacity style={[styles.button, {width:100,backgroundColor:'lightblue'}]} onPress={() => {setOtpModalVisible(false);setIsLoading(false);setOtp('');}}>
             <Text style={styles.buttonOutlineText}>Back</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button,{width:100}]} onPress={handleOtpVerification}>
