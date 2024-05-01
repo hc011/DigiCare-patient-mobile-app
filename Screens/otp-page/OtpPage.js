@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,89 +8,79 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import {  useState } from 'react';
 
-import {ip} from '../../assets/IPAdress'
-import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { setMobileNumberSlice } from '../../storage/mobileNumberSlice';
+
+import { getotp } from '../../api/getotp';
+import { login } from '../../api/login'
 
 const VerificationScreen = (props) => {
+  const dispatch = useDispatch();
+
   const [mobileNumber, setMobileNumber] = useState('');
   const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [otp, setOtp] = useState('');
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOtpVerification = async () => {
     setIsLoading(true);
-    console.log(mobileNumber)
-    const api_url = "http://"+ip+":8000/userdata/login/";
     try {
-      const response = await fetch(api_url, {
-        method: 'POST',
-        headers:{
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          phone_number: mobileNumber,
-          otp: otp,
-        }),
-      });
+      const response = await login({mobileNumber, otp});
       if (response.status === 200) {
-        // props.checkOtp();
-        // props.login();
-        // console.log('if')
+        setIsLoading(false); 
+        setOtpModalVisible(false); 
+        setMobileNumber(''); 
+        setOtp('');
+        dispatch(setMobileNumberSlice(mobileNumber));
         props.navigation.navigate('Profile')
       } 
       else if(response.status === 400){
+        setIsLoading(false); 
+        setOtpModalVisible(false); 
+        setMobileNumber(''); 
+        setOtp('');
+        dispatch(setMobileNumberSlice(mobileNumber));
         props.navigation.navigate('Registration');
       }
-      else {
-        // Alert.alert('Incorrect OTP, Please try again');
-        setOtpModalVisible(false);
-        setIsLoading(false);
-        setMobileNumber('');
+      else if(response.status === 401) {
+        Alert.alert('Incorrect OTP, Please try again');
         setOtp('');
-        // console.log('else')
       }
     } catch(error) {
       console.error('Error verifying OTP:', error);
       Alert.alert('Verification Error', 'An error occurred while verifying OTP.');
-    } finally {
-      setIsLoading(false); // End loading
-      setOtpModalVisible(false); // Close the modal regardless of the outcome
-      // setMobileNumber(''); // Optionally clear the mobile number
-      setOtp('');
     }
   };
 
   const generateOTP = async () => {
     setIsLoading(true); 
     const controller = new AbortController(); // Create a new instance of AbortController
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // Set timeout to abort the fetch request after 10 seconds
-  
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // Set timeout to abort in 5 seconds
+    const signal = controller.signal; 
     try {
-      const response = await fetch(`http://${ip}:8000/userdata/getotp?phone_number=${encodeURIComponent(mobileNumber)}`, {
-        signal: controller.signal, // Pass the AbortController's signal to the fetch request
-      });
+      const response = await getotp({signal, mobileNumber})
       clearTimeout(timeoutId); // Clear the timeout if the fetch completes in time
-  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      setIsLoading(false);
-      setOtpModalVisible(true);
-      const data = await response.json();
-      console.log(data); // Process response data
+      else{
+        setIsLoading(false);
+        setOtpModalVisible(true);
+      } 
     } catch (error) {
-      clearTimeout(timeoutId); // Ensure to clear the timeout in case of an error
-      if (error.name === 'AbortError') {
-        console.error('Fetch request was aborted due to timeout');
-        Alert.alert('Timeout', 'Request timed out. Please try again.');
-      } else {
-        console.error('Error generating OTP:', error);
-        Alert.alert('Error', 'Failed to generate OTP. Please try again.');
-      }
-      setIsLoading(false);
+        clearTimeout(timeoutId); // Ensure to clear the timeout in case of an error
+        if (error.name === 'AbortError') {
+          console.error('Fetch request was aborted due to timeout');
+          Alert.alert('Timeout', 'Request timed out. Please try again.');
+        } else {
+          console.error('Error generating OTP:', error);
+          Alert.alert('Error', 'Failed to generate OTP. Please try again.');
+        } 
     } finally {
-      }
+      setIsLoading(false);
+    }
   };
   
   return (
@@ -109,7 +98,8 @@ const VerificationScreen = (props) => {
         {isLoading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
-          <TouchableOpacity style={styles.button} onPress={generateOTP}>
+        
+        <TouchableOpacity style={styles.button} onPress={generateOTP}>
             <Text style={styles.buttonText}>Send OTP</Text>
           </TouchableOpacity>
           

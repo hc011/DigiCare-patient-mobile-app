@@ -1,12 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { Provider } from 'react-redux';
 
+import store from './storage/store';
 import OtpPage from './Screens/otp-page/OtpPage'
 import Profile from './Screens/profile-page/Profile';
-import RegistrationPage from './Screens/registration-page/RegistrationPage';
-import Header from './Components/Header';
 import DetailedProfile from './Screens/profile-detailed-page/DetailedProfile'
-
+import RegistrationPage from './Screens/registration-page/RegistrationPage'
+import DoctorPage from './Screens/profile-detailed-page/DoctorPage'
+import tokenPage from './Screens/token-status-page/tokenStatus'
+import BookingPage from './Screens/booking-page/BookingPage'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -14,57 +16,19 @@ const Stack = createStackNavigator();
 
 function NavigationStack() {
   return (
-  <Stack.Navigator 
-    screenOptions={({ navigation, route }) => ({
-      header: ({ navigation, route, options }) => {
-        const title = options.headerTitle !== undefined ? options.headerTitle : options.title !== undefined ? options.title : route.name;
-        let rc = null;
-
-        if(route.name === 'Profile') {
-          console.log('here');
-
-        }
-        
-        return (
-          <Header 
-            title={title}
-            rc={rc} 
-          />
-        );
-      },
-    })}
-  >
-
-    <Stack.Screen name="OtpPage" component={OtpPage} ></Stack.Screen>
-    <Stack.Screen name="Profile" component={Profile} ></Stack.Screen>
-    <Stack.Screen name="Registration" component={RegistrationPage} ></Stack.Screen>
-    <Stack.Screen name="Clinic" component={DetailedProfile} ></Stack.Screen>
+  <Stack.Navigator >
+    <Stack.Screen name="Login" component={OtpPage} options={{headerTitleAlign: 'center', headerStyle: {backgroundColor: "#5B8DD3"}}}></Stack.Screen>
+    <Stack.Screen name="Profile" component={Profile} options={{headerTitleAlign: 'center', headerLeft: () => null, headerStyle: {backgroundColor: "#5B8DD3"}}}></Stack.Screen>
+    <Stack.Screen name="Registration" component={RegistrationPage} options={{headerTitleAlign: 'center', headerStyle: {backgroundColor: "#5B8DD3"}}}></Stack.Screen>
+    <Stack.Screen name="Book Appointment" component={BookingPage} options={{headerTitleAlign: 'center', headerStyle: {backgroundColor: "#5B8DD3"}}}></Stack.Screen>
+    <Stack.Screen name = "Clinic" component={DoctorPage}options={{headerTitleAlign: 'center', headerStyle: {backgroundColor: "#5B8DD3"}}}></Stack.Screen>
+    <Stack.Screen name = "Token Status" component={tokenPage}options={{headerTitleAlign: 'center', headerStyle: {backgroundColor: "#5B8DD3"}}}></Stack.Screen>
   </Stack.Navigator>
   )
 }
 
-
 export default function App() {
-  const [isLogIn, setIsLogIn] = useState(false);
-  const [isOtpValid, setIsOtpValid] = useState(false);
 
-  function logInHandler() {
-    setIsLogIn(true);
-  }
-
-  function logOutHandler() {
-    setIsLogIn(false);
-  }
-
-  function otpHandler() {
-    setIsOtpValid(true);
-  }
-
-  function uncheckOtp() {
-    setIsOtpValid(false);
-  }
-
-  console.log(`islogin=${isLogIn}`);
   return (
 
     // <View style={styles.container}>
@@ -77,14 +41,14 @@ export default function App() {
     //   </>
     // )} */}
     
-    // <Profile />
+    // {/* <Profile /> */}
     
     // </View>
-
-    <NavigationContainer>
-      <NavigationStack />
-    </NavigationContainer>
-
+    <Provider store={store}>
+      <NavigationContainer>
+        <NavigationStack />
+      </NavigationContainer>
+    </Provider>
   );
 }
 

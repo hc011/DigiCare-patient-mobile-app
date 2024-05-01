@@ -1,33 +1,35 @@
-import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   TouchableOpacity,
   Alert,
-  Button,
   ScrollView,
-  Pressable
+  Pressable,
+  ActivityIndicator
 } from 'react-native';
+import { TextInput } from 'react-native-paper';
+import React, { useState } from 'react';
+
+import { useSelector } from 'react-redux';
+
+import { register } from '../../api/register';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
-
 import validator from 'validator';
-import {ip} from '../../assets/IPAdress'
-import { useNavigation } from '@react-navigation/native';
 
 const RegistrationPage = (props) => {
+  const mobileSlice = useSelector(state => state.mobile.mobileNumber);
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  // const [gender, setGender] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
+  const [mobileNumber, setMobileNumber] = useState(mobileSlice);
   const [email, setEmail] = useState('');
   const [dob, setDob] = useState(new Date());
   const [password, setPassword] = useState('')
-
-  const [showDatePicker, setShowDatePicker] = useState(false); 
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); 
 
   const dateChangeHandler = (event, selectedDate) => {
     const currentDate = selectedDate || setDob;
@@ -35,37 +37,26 @@ const RegistrationPage = (props) => {
     setDob(currentDate);
   }
 
-  const registerCall = async() => {
-      const api_url = "http://"+ip+":8000/userdata/register/"
-      var response;
+  const registerUser = async() => {
       const DOB = format(dob, 'yyyy-MM-dd');
+      setIsLoading(true);
       try {
-        response = await fetch(api_url, {
-          method: 'POST',
-          headers:{
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            phone_number: mobileNumber,
-            first_name: firstName,
-            last_name: lastName,
-            dob: DOB,
-            email: email,
-            password: password
-          }),
-        });
-
-        const data = await response.json();
-        console.log(data);
-
+        const response = await register({mobileNumber, firstName, lastName, DOB, email, password })
+        if (response.status === 201) {
+          setIsLoading(false);
+          props.navigation.navigate('Profile');
+        }
+        else if(response.status === 400) {
+          // navigation.goBack();
+          Alert.alert('Registration unsuccessful, Please try again');
+          console.log('register unsuccess ')
+        }
     } catch(error) {
-      console.log('Error veryfying OTP',error);
+      console.log('Error registering user', error);
     } 
   }
 
-  const handleRegister = () => {
-
-    // Handle registration logic here (e.g., send data to server)
+  const handleRegister = async() => {
     console.log('Registration data:', {
       firstName,
       lastName,
@@ -84,44 +75,42 @@ const RegistrationPage = (props) => {
     || !password.trim())){
       Alert.alert('Invalid details','Please enter valid inputs')
       return;
+    } else if (!validator.isEmail(email)) {
+        Alert.alert('Invalid Email', 'Please enter a valid email address.');
+        setEmail("")
+        return;
+    } else if (mobileNumber.length != 10) {
+        Alert.alert('Invalid mobile number', 'Please enter a valid mobile number.');
+        setMobileNumber("")
+        return;
     }
 
-  else if (!validator.isEmail(email)) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address.');
-      setEmail("")
-      return;
-  }
-
-  else if (mobileNumber.length != 10) {
-      Alert.alert('Invalid mobile number', 'Please enter a valid mobile number.');
-      setMobileNumber("")
-      return;
-  }
-    
-    //register api call here
-    registerCall();
-
-    // props.onLogIn();
-    props.navigation.navigate('Home');
-
+    registerUser();
   };
   
   return (
     <View>
     <ScrollView style={styles.container}>
 
-      <Text style={styles.title}>Registration</Text>
-
       <TextInput
         style={styles.input}
-        placeholder="First Name"
+        mode="outlined"
+          theme={{
+            roundness: 25,
+            }}
+        label='First Name'
         value={firstName}
         onChangeText={setFirstName}
       />
 
+
       <TextInput
         style={styles.input}
-        placeholder="Last Name"
+        mode="outlined"
+        theme={{
+          roundness: 25,
+          }}
+        label='Last Name'
         value={lastName}
         onChangeText={setLastName}
       />
@@ -129,9 +118,10 @@ const RegistrationPage = (props) => {
       <View style={styles.datePicker}>
       <View style={[styles.dobText, styles.input]}><Text style={{color:'grey'}}>{format(dob, 'dd-MM-yyyy')}</Text></View>
       <TouchableOpacity onPress={()=>{setShowDatePicker(true)}} style={styles.datePickerButton}>
-        <Text style={styles.buttonText} >Date of birth</Text>
+        <Text style={styles.buttonText} >Select birth date</Text>
       </TouchableOpacity>
       </View>
+      {isLoading && <ActivityIndicator size="large" color="#0000ff" />}
 
       {showDatePicker && (
         <DateTimePicker
@@ -158,7 +148,11 @@ const RegistrationPage = (props) => {
       <TextInput
         style={styles.input}
         keyboardType="phone-pad"
-        placeholder="Mobile Number"
+        mode="outlined"
+        theme={{
+          roundness: 25,
+          }}
+        label='Mobile Number'
         value={mobileNumber}
         onChangeText={setMobileNumber}
         maxLength={10}
@@ -167,7 +161,11 @@ const RegistrationPage = (props) => {
       <TextInput
         style={styles.input}
         keyboardType="email-address"
-        placeholder="Email"
+        mode="outlined"
+        theme={{
+          roundness: 25,
+          }}
+        label='Email'
         value={email}
         onChangeText={setEmail}
       />
@@ -175,7 +173,11 @@ const RegistrationPage = (props) => {
       <TextInput
         style={styles.input}
         secureTextEntry={true}
-        placeholder="Password"
+        mode="outlined"
+        theme={{
+          roundness: 25,
+          }}
+        label='Password'
         value={password}
         onChangeText={setPassword}
       />
@@ -183,7 +185,7 @@ const RegistrationPage = (props) => {
       <Pressable style={styles.button} onPress={handleRegister} >
         <Text style={[styles.buttonText,{fontSize:16}]}>Register</Text>
       </Pressable>
-      <TouchableOpacity style={[styles.button, {backgroundColor:'lightblue'}]}  onPress={useNavigation().goBack()} touchableNative >
+      <TouchableOpacity style={[styles.button, {backgroundColor:'lightblue'}]}  onPress={props.navigation.goBack} touchableNative >
         <Text style={[styles.buttonText,{fontSize:16}]}>Back</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -192,6 +194,13 @@ const RegistrationPage = (props) => {
 };
 
 const styles = StyleSheet.create({
+  label: {
+    marginBottom: 5,
+    color: 'black',
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
+  
   container: {
     backgroundColor: 'white',
     padding: 20,
@@ -210,17 +219,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
   input: {
     marginBottom: 10,
-    borderWidth: 1,
-    borderColor: 'grey',
-    padding: 10,
-    borderRadius:30,
   },
   gender : {
     marginBottom: 10,
@@ -237,9 +237,8 @@ const styles = StyleSheet.create({
     marginBottom:5,
   },
   buttonText: {
-    color: 'black',
+    color: 'white',
     textAlign: 'center',
-    
   },
   datePicker: {
     flexDirection:'row',
@@ -248,6 +247,7 @@ const styles = StyleSheet.create({
     alignItems:'center',
   },
   dobText : {
+    borderRadius:100,
     height:47,
     borderWidth: 1,
     borderColor: 'grey',
