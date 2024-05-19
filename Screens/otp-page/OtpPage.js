@@ -10,11 +10,15 @@ import {
 } from 'react-native';
 import {  useState } from 'react';
 
-import { useDispatch } from 'react-redux';
+import { StackActions } from '@react-navigation/native';
+
+import { useDispatch, useSelector } from 'react-redux';
 import { setMobileNumberSlice } from '../../storage/mobileNumberSlice';
+import { setLoginStatus } from '../../storage/loginStatusSlice';
 
 import { getotp } from '../../api/getotp';
 import { login } from '../../api/login'
+import { setUserDetailsSlice } from '../../storage/userDetailsSlice';
 
 const VerificationScreen = (props) => {
   const dispatch = useDispatch();
@@ -27,41 +31,46 @@ const VerificationScreen = (props) => {
   const handleOtpVerification = async () => {
     setIsLoading(true);
     try {
-      const response = await login({mobileNumber, otp});
-      if (response.status === 200) {
-        setIsLoading(false); 
-        setOtpModalVisible(false); 
-        setMobileNumber(''); 
-        setOtp('');
-        dispatch(setMobileNumberSlice(mobileNumber));
-        props.navigation.navigate('Profile')
-      } 
-      else if(response.status === 400){
-        setIsLoading(false); 
-        setOtpModalVisible(false); 
-        setMobileNumber(''); 
-        setOtp('');
-        dispatch(setMobileNumberSlice(mobileNumber));
-        props.navigation.navigate('Registration');
-      }
-      else if(response.status === 401) {
-        Alert.alert('Incorrect OTP, Please try again');
-        setOtp('');
-      }
-    } catch(error) {
-      console.error('Error verifying OTP:', error);
-      Alert.alert('Verification Error', 'An error occurred while verifying OTP.');
+        const response = await login({mobileNumber, otp});
+        console.log(response);
+        
+        if (response.status === 200) {
+            setIsLoading(false);
+            setOtpModalVisible(false);
+            setMobileNumber('');
+            setOtp('');
+            dispatch(setUserDetailsSlice(response.data));
+            dispatch(setMobileNumberSlice(mobileNumber));
+            dispatch(setLoginStatus(true));
+            props.navigation.navigate('Profile');
+        } else if (response.status === 404) {
+            setIsLoading(false);
+            setOtpModalVisible(false);
+            setMobileNumber('');
+            setOtp('');
+            dispatch(setMobileNumberSlice(mobileNumber));
+            props.navigation.navigate('Registration');
+        } else if (response.status === 400) {
+            Alert.alert('Incorrect OTP, Please try again');
+            setOtp('');
+        }
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        Alert.alert('Verification Error', 'An error occurred while verifying OTP.');
+    } finally {
+        setIsLoading(false);
     }
-  };
+};
+
 
   const generateOTP = async () => {
     setIsLoading(true); 
-    const controller = new AbortController(); // Create a new instance of AbortController
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // Set timeout to abort in 5 seconds
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); 
     const signal = controller.signal; 
     try {
       const response = await getotp({signal, mobileNumber})
-      clearTimeout(timeoutId); // Clear the timeout if the fetch completes in time
+      clearTimeout(timeoutId);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -70,7 +79,7 @@ const VerificationScreen = (props) => {
         setOtpModalVisible(true);
       } 
     } catch (error) {
-        clearTimeout(timeoutId); // Ensure to clear the timeout in case of an error
+        clearTimeout(timeoutId); 
         if (error.name === 'AbortError') {
           console.error('Fetch request was aborted due to timeout');
           Alert.alert('Timeout', 'Request timed out. Please try again.');
@@ -98,13 +107,15 @@ const VerificationScreen = (props) => {
         {isLoading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
-        
         <TouchableOpacity style={styles.button} onPress={generateOTP}>
             <Text style={styles.buttonText}>Send OTP</Text>
           </TouchableOpacity>
-          
         )}
       </View>
+
+      <Text style={styles.motto}>
+        Portal to simplify managing your health and wellness is on the way {'\n'}➜  
+      </Text>
 
       <Modal visible={otpModalVisible} animationType="slide" transparent={true} >
       <TouchableOpacity
@@ -168,6 +179,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  motto: {
+    textAlign: 'left',
+    fontSize: 40,
+    marginTop: 30,
+    color: '#595959',
+    paddingHorizontal: 5,
+    fontWeight: '600', 
   },
   label: {
     fontWeight: 'bold',

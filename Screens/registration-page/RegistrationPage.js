@@ -2,7 +2,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Alert,
   ScrollView,
   Pressable,
@@ -91,7 +90,6 @@ const RegistrationPage = (props) => {
   return (
     <View>
     <ScrollView style={styles.container}>
-
       <TextInput
         style={styles.input}
         mode="outlined"
@@ -116,10 +114,23 @@ const RegistrationPage = (props) => {
       />
 
       <View style={styles.datePicker}>
-      <View style={[styles.dobText, styles.input]}><Text style={{color:'grey'}}>{format(dob, 'dd-MM-yyyy')}</Text></View>
-      <TouchableOpacity onPress={()=>{setShowDatePicker(true)}} style={styles.datePickerButton}>
-        <Text style={styles.buttonText} >Select birth date</Text>
-      </TouchableOpacity>
+        {/* <View style={[styles.dobText, styles.input]}><Text style={{color:'grey'}}>{format(dob, 'dd-MM-yyyy')}</Text></View> */}
+        <Pressable onPress={()=>{setShowDatePicker(true)}}>
+        <TextInput
+          style={[styles.input, {width:115}]}
+          mode="outlined"
+          theme={{
+            roundness: 25,
+            }}
+          label='Date of birth'
+          value={format(dob, 'dd-MM-yyyy')}
+          editable={false}
+        />
+        </Pressable>
+
+        {/* <TouchableOpacity onPress={()=>{setShowDatePicker(true)}} style={styles.datePickerButton}>
+          <Text style={styles.buttonText} >Select date</Text>
+        </TouchableOpacity> */}
       </View>
       {isLoading && <ActivityIndicator size="large" color="#0000ff" />}
 
@@ -185,9 +196,9 @@ const RegistrationPage = (props) => {
       <Pressable style={styles.button} onPress={handleRegister} >
         <Text style={[styles.buttonText,{fontSize:16}]}>Register</Text>
       </Pressable>
-      <TouchableOpacity style={[styles.button, {backgroundColor:'lightblue'}]}  onPress={props.navigation.goBack} touchableNative >
+      {/* <TouchableOpacity style={[styles.button, {backgroundColor:'lightblue'}]}  onPress={props.navigation.goBack} touchableNative >
         <Text style={[styles.buttonText,{fontSize:16}]}>Back</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </ScrollView>
     </View>
   );
@@ -204,7 +215,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     padding: 20,
-    marginTop: 30,
+    marginTop: 20,
     borderWidth:1,
     borderColor:'grey',
     borderRadius:18,
@@ -257,7 +268,8 @@ const styles = StyleSheet.create({
   },
   datePickerButton:{
     backgroundColor: '#5B8DD3',
-    padding: 10,
+    alignSelf:'flex-end',
+    padding: 5,
     marginLeft:10,
     marginBottom:10,
     justifyContent:'center',

@@ -15,7 +15,8 @@ export const register = async(props) => {
           last_name: props.lastName,
           dob: props.DOB,
           email: props.email,
-          password: props.password
+          password: props.password,
+          // sex:
         }),
       });
         return response;

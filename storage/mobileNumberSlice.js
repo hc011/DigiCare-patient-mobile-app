@@ -5,7 +5,7 @@ const mobileNumberSlice = createSlice({
   initialState: '', 
   reducers: {
     setMobileNumberSlice(state, action) {
-        return {...state, mobileNumber: action.payload};;
+        return {...state, mobileNumber: action.payload};
     },
   },
 });

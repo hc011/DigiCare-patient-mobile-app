@@ -1,19 +1,43 @@
-import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Switch } from 'react-native';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { addAppointment } from '../../api/addAppointement';
+import { useDispatch } from 'react-redux';
+import { setAppointmentDetails } from '../../storage/appointmentDetailsSlice';
+
+function calculateAge(birthdate) {
+    const birthDate = new Date(birthdate);
+    const today = new Date();
+    
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    
+    return age;
+}
 
 const BookingPage = (props) => {
+    const dispatch = useDispatch();
+    const selectedDoctor = useSelector(state => state.doctor.selectedDoctorSlice);
+    const userDetails = useSelector(state => state.user.userDetails);
     const [bookingForSelf, setBookingForSelf] = useState(false);
-    const [name, setName] = useState('');
+    const [name, setName] = useState();
     const [reason, setReason] = useState('');
     const [contact, setContact] = useState('');
     const [sex, setSex] = useState('');
-    const [age, setAge] = useState('');
+    const [age, setAge] = useState();
 
-    const handleConfirm = () => {
-        //Add appointment api call
+    const handleConfirm = async() => {
+        const [response, appointmentId, position] = await addAppointment({name, sex, age, contact, reason, paid: true, appointment_time: new Date(), user: 1, cabinId: 1 })
+        console.log([response, appointmentId, position])
+        if(appointmentId) {
+            dispatch(setAppointmentDetails({appointmentId, position}));
+        }
         props.navigation.pop(2);
         props.navigation.navigate('Token Status')
-        // Here would be the logic to confirm the appointment, possibly sending the data to a server
     };
 
     const toggleSwitch = () => {
@@ -27,17 +51,15 @@ const BookingPage = (props) => {
                 setAge('');
             } else {
                 // Switching to booking for self, autofill from user's profile
-                setName('John Doe');  // Simulated user data
-                setContact('john.doe@example.com');
-                setSex('male'); // Set a default or retrieved 'sex' from profile
-                setAge('30');
+                setName(userDetails.first_name +" "+ userDetails.last_name);  // Simulated user data
+                setContact(userDetails.phone_number);
+                setSex('M');
+                setAge(String(calculateAge(userDetails.dob)));
             }
             return !previousState;
         });
     };
     
-    
-
     const RadioButton = ({ label, value, onPress }) => {
         return (
             <TouchableOpacity style={styles.radioButtonContainer} onPress={() => onPress(value)}>
@@ -59,8 +81,8 @@ const BookingPage = (props) => {
             <View style={styles.doctorSummary}>
                 <Image source={require('../../assets/doctorDP__icon.jpg')} style={styles.profilePic} />
                 <View style={styles.textContainer}>
-                    <Text style={styles.doctorName}>Dr. Jane Smith</Text>
-                    <Text style={styles.specialty}>Cardiologist</Text>
+                    <Text style={styles.doctorName}>{selectedDoctor.name}</Text>
+                    <Text style={styles.specialty}>{selectedDoctor.specialization}</Text>
                 </View>
             </View>
 
@@ -86,9 +108,9 @@ const BookingPage = (props) => {
 
                 <Text style={styles.label}>Sex:</Text>
                 <View style={styles.radioGroup}>
-                    <RadioButton label="Male" value="male" onPress={setSex} />
-                    <RadioButton label="Female" value="female" onPress={setSex} />
-                    <RadioButton label="Other" value="other" onPress={setSex} />
+                    <RadioButton label="Male" value="M" onPress={setSex} />
+                    <RadioButton label="Female" value="F" onPress={setSex} />
+                    <RadioButton label="Other" value="O" onPress={setSex} />
                 </View>
 
                 <Text style={styles.label}>Age:</Text>

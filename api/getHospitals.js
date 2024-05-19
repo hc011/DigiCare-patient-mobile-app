@@ -6,9 +6,8 @@ export const getHospitals = async() => {
    return(  
    fetch(api_url)
         .then(response => {
-            // Check if the request was successful
             if (response.ok) {
-            return response.json(); // Parse the response body as JSON
+            return response.json(); 
             }
             throw new Error('Network response was not ok.');
         })

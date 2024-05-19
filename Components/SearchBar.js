@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingVertical: 10,
+    fontSize:16
   },
   icon: {
     padding: 10,

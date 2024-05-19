@@ -1,10 +1,29 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, ScrollView, Button } from 'react-native';
+
+import { useSelector } from 'react-redux';
+import { update} from '../../api/update';
+
+import { getCheckupCabin } from '../../api/getCheckupCabin'
+import { getPosition } from '../../api/getPosition';
 
 const TokenStatus = () => {
+    const selectedDoctor = useSelector(state => state.doctor.selectedDoctorSlice);
+    const selectedHospital = useSelector(state => state.hospital.selectedHospital);
     const [queueNumber, setQueueNumber] = useState(1);
     const [animate, setAnimate] = useState(false);
     const rippleAnimation = useRef(new Animated.Value(0)).current;
+    const appointmentDetails = useSelector(state => state.appointmentDetails);
+    const [currentPosition, setCurrentPosition] = useState();
+
+    updatePosition = async() =>{
+        let pos = await getPosition(appointmentDetails.appointmentId);
+        setCurrentPosition(pos);
+    }
+
+    useEffect(() => {
+        updatePosition();
+    }, [])
 
     useEffect(() => {
         if (animate) {
@@ -18,31 +37,46 @@ const TokenStatus = () => {
                 setAnimate(false);
             });
         }
-    }, [animate]);
+    }, [currentPosition]);
 
     useEffect(() => {
         const interval = setInterval(() => {
             setAnimate(true);
-            setQueueNumber(prev => prev + 1);
+            updatePosition();
         }, 5000);
         return () => clearInterval(interval);
     }, []);
 
-    const doctorName = 'Dr. Alice Smith';
-    const speciality = 'Cardiology';
     const estimatedWaitTime = 'Approximately 15 minutes';
+
+    const checkIn = async() => {
+        const cabinDetails = await getCheckupCabin(String(selectedDoctor.id), String(selectedHospital.registration_id));
+        const pos = await update({event: 'checkin', cabinId: String(cabinDetails.id), appointment_id: appointmentDetails.appointmentId});
+        setCurrentPosition(pos);
+    }   
+
+    const checkStatus = async() => {
+        // const cabinId = await getCheckupCabin(String(selectedDoctor.id), String(selectedHospital.registration_id))
+        // console.log(cabinId)
+    }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.circle}>
                 <Animated.View style={[styles.ripple, rippleStyle(rippleAnimation)]} />
-                <Text style={styles.queueNumber}>{queueNumber}</Text>
+                <Text style={styles.queueNumber}>{currentPosition}</Text>
             </View>
+            <View style={{flexDirection:'row'}}>
+                
+                <View style={{margin:10}}><Button title='check-in' onPress={checkIn} /></View>
+                <View style={{margin:10}}><Button title='check-status' onPress={checkStatus}/></View>
+            </View>
+
             <View style={styles.detailsCard}>
                 <Text style={styles.sectionTitle}>Doctor Information</Text>
-                <Text style={styles.detail}>Name: {doctorName}</Text>
-                <Text style={styles.detail}>Speciality: {speciality}</Text>
-                <Text style={styles.detail}>Experience: Over 10 years</Text>
+                <Text style={styles.detail}>Name: {selectedDoctor.name}</Text>
+                <Text style={styles.detail}>Speciality: {selectedDoctor.specialization}</Text>
+                <Text style={styles.detail}>Experience: {selectedDoctor.experience} years+</Text>
 
                 <Text style={styles.sectionTitle}>Appointment Details</Text>
                 <Text style={styles.detail}>Date: April 27, 2024</Text>
@@ -51,8 +85,8 @@ const TokenStatus = () => {
                 <Text style={styles.detail}>Location: 123 Health Street, Wellness City</Text>
 
                 <Text style={styles.sectionTitle}>Contact & Policy</Text>
-                <Text style={styles.detail}>Phone: (123) 456-7890</Text>
-                <Text style={styles.detail}>Email: clinic@example.com</Text>
+                <Text style={styles.detail}>Phone: (+91) {selectedHospital.phone_number}</Text>
+                <Text style={styles.detail}>Email: {selectedHospital.email}</Text>
                 <Text style={styles.detail}>Cancellation Policy: Free cancellation up to 24 hours before the appointment.</Text>
             </View>
         </ScrollView>

@@ -1,7 +1,8 @@
-import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { useSelector } from 'react-redux';
 
-const DoctorProfile = (props) => {
+const DoctorDetails = (props) => {
+    const selectedDoctor = useSelector(state => state.doctor.selectedDoctorSlice)
     const handleAppointmentBooking = () => {
         props.navigation.navigate('Book Appointment');
     };
@@ -14,31 +15,31 @@ const DoctorProfile = (props) => {
                         source={require('../../assets/doctorDP__icon.jpg')} 
                         style={styles.profilePic} 
                     />
-                    <Text style={styles.name}>Dr. John Doe</Text>
-                    <Text style={styles.speciality}>Cardiology Specialist</Text>
-                    <Text style={styles.rating}>🌟 4.5 / 5 (200 Reviews)</Text>
+                    <Text style={styles.name}>{selectedDoctor.name}</Text>
+                    <Text style={styles.speciality}>{selectedDoctor.specialization}</Text>
+                    <Text style={styles.rating}>🌟 {selectedDoctor.rating} / 5 (200 Reviews)</Text>
                 </View>
 
                 <View style={styles.infoContainer}>
                     <Text style={styles.sectionHeader}>Contact Information</Text>
-                    <Text style={styles.infoText}>Phone: (123) 456-7890</Text>
-                    <Text style={styles.infoText}>Email: johndoe@example.com</Text>
+                    <Text style={styles.infoText}>Phone: (+91) {selectedDoctor.phone_number}</Text>
+                    <Text style={styles.infoText}>Email: {selectedDoctor.email}</Text>
                     <Text style={styles.infoText}>Address: 123 Medicine Rd, Health City</Text>
 
-                    <Text style={styles.sectionHeader}>Professional Details</Text>
+                    {/* <Text style={styles.sectionHeader}>Professional Details</Text>
                     <Text style={styles.infoText}>Qualifications: MD, PhD - Cardiology</Text>
                     <Text style={styles.infoText}>Years of Experience: 20 years</Text>
-                    <Text style={styles.infoText}>Affiliations: American Cardiology Association</Text>
+                    <Text style={styles.infoText}>Affiliations: American Cardiology Association</Text> */}
 
-                    <Text style={styles.sectionHeader}>Availability</Text>
+                    <Text style={styles.sectionHeader}>Timings</Text>
                     <Text style={styles.infoText}>Monday - Friday: 9:00 AM - 5:00 PM</Text>
                     <Text style={styles.infoText}>Emergency: 24/7 on call</Text>
 
                     <Text style={styles.sectionHeader}>Insurance</Text>
                     <Text style={styles.infoText}>Accepted Plans: Most major insurance plans accepted</Text>
 
-                    <Text style={styles.sectionHeader}>Languages Spoken</Text>
-                    <Text style={styles.infoText}>English, Hindi</Text>
+                    {/* <Text style={styles.sectionHeader}>Languages Spoken</Text>
+                    <Text style={styles.infoText}>English, Hindi</Text> */}
                 </View>
             </ScrollView>
             <TouchableOpacity style={styles.button} onPress={handleAppointmentBooking}>
@@ -132,4 +133,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default DoctorProfile;
+export default DoctorDetails;
