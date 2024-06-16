@@ -1,74 +1,34 @@
+import React, { useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
-  Modal,
   StyleSheet,
   ActivityIndicator,
   Alert,
-  ImageBackground,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import { useState } from "react";
-import fontSizes from "../../constants/fontSizes";
-import { StackActions } from "@react-navigation/native";
+
+import { Button } from "react-native-paper";
+
 import { TextInput } from "react-native-paper";
-
-import { useDispatch, useSelector } from "react-redux";
-import { setMobileNumberSlice } from "../../storage/mobileNumberSlice";
-import { setLoginStatus } from "../../storage/loginStatusSlice";
-
+import { useDispatch } from "react-redux";
+import fontSizes from "../../constants/fontSizes";
 import { getotp } from "../../api/getotp";
-import { login } from "../../api/login";
+import { setMobileNumberSlice } from "../../storage/mobileNumberSlice";
 import { setUserDetailsSlice } from "../../storage/userDetailsSlice";
-import { ScrollView } from "react-native-gesture-handler";
-const image = require("../../assets/SignIn_bckgd_image.jpg");
 
 const VerificationScreen = (props) => {
   const dispatch = useDispatch();
-
   const [mobileNumber, setMobileNumber] = useState("");
-  const [otpModalVisible, setOtpModalVisible] = useState(false);
-  const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleOtpVerification = async () => {
-    setIsLoading(true);
-    try {
-      const response = await login({ mobileNumber, otp });
-      console.log(response);
-
-      if (response.status === 200) {
-        setIsLoading(false);
-        setOtpModalVisible(false);
-        setMobileNumber("");
-        setOtp("");
-        dispatch(setUserDetailsSlice(response.data));
-        dispatch(setMobileNumberSlice(mobileNumber));
-        dispatch(setLoginStatus(true));
-        props.navigation.navigate("Profile");
-      } else if (response.status === 404) {
-        setIsLoading(false);
-        setOtpModalVisible(false);
-        setMobileNumber("");
-        setOtp("");
-        dispatch(setMobileNumberSlice(mobileNumber));
-        props.navigation.navigate("Registration");
-      } else if (response.status === 400) {
-        Alert.alert("Incorrect OTP, Please try again");
-        setOtp("");
-      }
-    } catch (error) {
-      console.error("Error verifying OTP:", error);
-      Alert.alert(
-        "Verification Error",
-        "An error occurred while verifying OTP."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const generateOTP = async () => {
+    if (!mobileNumber) {
+      Alert.alert("Please enter mobile number.");
+      return;
+    }
     setIsLoading(true);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -79,8 +39,10 @@ const VerificationScreen = (props) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       } else {
+        dispatch(setUserDetailsSlice({ phone_number: mobileNumber }));
+        setMobileNumber("");
+        props.navigation.navigate("otpVerification");
         setIsLoading(false);
-        setOtpModalVisible(true);
       }
     } catch (error) {
       clearTimeout(timeoutId);
@@ -97,101 +59,55 @@ const VerificationScreen = (props) => {
   };
 
   return (
-    <ScrollView keyboardShouldPersistTaps="never" style={{ flex: 1 }}>
-      {/* <ImageBackground source={image} style={{ height: "100%" }}> */}
-      <View style={styles.container}>
-        <Text style={styles.signInText}>Sign In</Text>
-        <View style={styles.content}>
-          <Text style={styles.label}>Mobile Number:</Text>
-          <TextInput
-            mode="outlined"
-            outlineColor="#F0F0F0"
-            activeOutlineColor="#808080"
-            style={styles.input}
-            keyboardType="phone-pad"
-            placeholder="Enter your mobile number"
-            value={mobileNumber}
-            onChangeText={setMobileNumber}
-            maxLength={10}
-          />
-          {isLoading ? (
-            <ActivityIndicator size="large" color="#0000ff" />
-          ) : (
-            <TouchableOpacity style={styles.button} onPress={generateOTP}>
-              <Text style={styles.buttonText}>Sign In</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-
-        <Text style={styles.motto}>
-          Portal to simplify managing your health and wellness is on the way{" "}
-          {"\n"}➜
-        </Text>
-
-        <Modal
-          visible={otpModalVisible}
-          animationType="slide"
-          transparent={true}
-        >
-          <TouchableOpacity
-            style={styles.overlay}
-            activeOpacity={1}
-            onPressOut={() => {
-              setOtpModalVisible(false);
-              setIsLoading(false);
-            }}
-          >
-            <View style={styles.modalContent}>
-              <View style={{ alignItems: "center", marginBottom: 20 }}>
-                <Text style={[styles.label, { fontSize: 24 }]}>Enter OTP</Text>
-                <TextInput
-                  value={otp}
-                  onChangeText={setOtp}
-                  keyboardType="numeric"
-                  style={[
-                    styles.input,
-                    { fontSize: 20 },
-                    { textAlign: "center" },
-                    { width: 80 },
-                  ]}
-                  maxLength={4}
-                  placeholder="_ _ _ _"
-                />
-              </View>
-
-              <View
-                style={[
-                  { flexDirection: "row" },
-                  { justifyContent: "space-evenly" },
-                  { width: "100%" },
-                ]}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
+        <View style={styles.container}>
+          <Text style={styles.signInText}>Sign In</Text>
+          <View style={styles.content}>
+            <Text style={styles.label}>Mobile Number:</Text>
+            <TextInput
+              mode="outlined"
+              outlineColor="#F0F0F0"
+              activeOutlineColor="#808080"
+              style={styles.input}
+              keyboardType="phone-pad"
+              placeholder="Enter your mobile number"
+              value={mobileNumber}
+              onChangeText={setMobileNumber}
+              maxLength={10}
+            />
+            {isLoading ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+              <Button
+                mode="contained"
+                onPress={generateOTP}
+                contentStyle={{
+                  padding: 8,
+                  alignItems: "center",
+                  width: "100%",
+                }}
+                labelStyle={{ fontSize: fontSizes.buttonLarge }}
+                style={{ borderRadius: 30, backgroundColor: "#5B8DD3" }}
               >
-                <TouchableOpacity
-                  style={[
-                    styles.button,
-                    { width: 100, backgroundColor: "lightblue" },
-                  ]}
-                  onPress={() => {
-                    setOtpModalVisible(false);
-                    setIsLoading(false);
-                    setOtp("");
-                  }}
-                >
-                  <Text style={styles.buttonOutlineText}>Back</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.button, { width: 100 }]}
-                  onPress={handleOtpVerification}
-                >
-                  <Text style={styles.buttonText}>Verify OTP</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </Modal>
-      </View>
-      {/* </ImageBackground> */}
-    </ScrollView>
+                <Text style={styles.buttonText}>Sign In</Text>
+              </Button>
+            )}
+          </View>
+
+          <Text style={styles.motto}>
+            Portal to simplify managing your health and wellness is on the way{" "}
+            {"\n"}➜
+          </Text>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -200,7 +116,6 @@ export default VerificationScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // height: 1000,
     alignItems: "center",
     paddingTop: 30,
   },
@@ -209,8 +124,6 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   content: {
-    // width: '80%',
-    // marginTop: '10%',
     padding: 20,
     marginTop: 60,
     width: "90%",
@@ -234,50 +147,18 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     borderRadius: 5,
     fontSize: fontSizes.input,
+    backgroundColor: "white",
   },
   button: {
     backgroundColor: "#5B8DD3",
-    padding: 12,
-    borderRadius: 5,
+    // padding: 8,
+    borderRadius: 30,
     alignItems: "center",
-    marginBottom: 5,
+    width: "100%",
+    // alignSelf: "center",
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
-    // fontWeight: 'bold',
-  },
-  buttonOutlineText: {
-    color: "black",
-    fontSize: 16,
-    // fontWeight: 'bold',
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Translucent overlay
-  },
-  modalContent: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 5,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 15,
-    marginTop: "50%",
-  },
-  otpInput: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 10,
-    marginBottom: 20,
-    width: "80%", // Adjust based on your layout needs
-    borderRadius: 5,
+    fontSize: fontSizes.buttonLarge,
   },
 });

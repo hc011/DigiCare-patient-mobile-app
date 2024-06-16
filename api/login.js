@@ -1,29 +1,30 @@
-import {ip} from '../assets/IPAdress';
+import { ip } from "../assets/IPAdress";
 
 const api_url = `http://${ip}:8000/userdata/login/`;
 
 export const login = async (props) => {
+  console.log(props);
   try {
     const response = await fetch(api_url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        phone_number: props.mobileNumber,
+        phone_number: props.phone_number,
         otp: props.otp,
       }),
     });
 
-    console.log('response', response.status)
-    
+    console.log("response", response.status);
+
     const responseData = await response.json();
     return {
       status: response.status,
-      data: responseData
+      data: responseData,
     };
   } catch (error) {
-    console.error('There has been a problem with your fetch operation:', error);
+    console.error("There has been a problem with your fetch operation:", error);
     throw error;
   }
 };
