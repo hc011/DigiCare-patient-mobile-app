@@ -13,6 +13,8 @@ import { addAppointment } from "../../api/addAppointement";
 import { useDispatch } from "react-redux";
 import { setAppointmentDetails } from "../../storage/appointmentDetailsSlice";
 import { TextInput } from "react-native-paper";
+import fontSizes from "../../constants/fontSizes";
+import selectedDoctorSlice from "../../storage/selectedDoctorSlice";
 
 function calculateAge(birthdate) {
   const birthDate = new Date(birthdate);
@@ -29,6 +31,7 @@ function calculateAge(birthdate) {
 }
 
 const BookingPage = (props) => {
+  console.log(selectedDoctorSlice);
   const dispatch = useDispatch();
   const selectedDoctor = useSelector(
     (state) => state.doctor.selectedDoctorSlice
@@ -72,7 +75,7 @@ const BookingPage = (props) => {
         setAge("");
       } else {
         // Switching to booking for self, autofill from user's profile
-        setName(userDetails.first_name + " " + userDetails.last_name); // Simulated user data
+        setName(userDetails.first_name + " " + userDetails.last_name);
         setContact(userDetails.phone_number);
         setSex("M");
         setAge(String(calculateAge(userDetails.dob)));
@@ -124,6 +127,7 @@ const BookingPage = (props) => {
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
             value={bookingForSelf}
+            style={{ marginLeft: 40 }}
           />
         </View>
 
@@ -159,12 +163,12 @@ const BookingPage = (props) => {
           placeholder="Email or Phone"
         />
 
-        <Text style={styles.label}>Reason for Visit:</Text>
+        <Text style={styles.label}>Write Your Problem:</Text>
         <TextInput
           style={styles.inputLarge}
           value={reason}
           onChangeText={setReason}
-          placeholder="Brief description"
+          placeholder="Brief description about your problem here."
           multiline
         />
 
@@ -206,12 +210,12 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   doctorName: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: fontSizes.h4,
+    fontWeight: "600",
     color: "white", // Theme color for the text
   },
   specialty: {
-    fontSize: 16,
+    fontSize: fontSizes.paragraph,
     color: "white",
   },
   formContainer: {
@@ -219,13 +223,13 @@ const styles = StyleSheet.create({
   },
   switchContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    // marginBottom: 20,
   },
   label: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: fontSizes.input,
+    fontWeight: "500",
     color: "#2C3E50",
     marginBottom: 5,
   },
@@ -247,6 +251,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#FFFFFF",
     textAlignVertical: "top",
+    justifyContent: "flex-start",
   },
   radioButtonContainer: {
     flexDirection: "row",

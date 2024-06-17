@@ -103,7 +103,7 @@ const RegistrationPage = (props) => {
   };
 
   return (
-    <View style={{ marginTop: 50, padding: 10, alignItems: "center" }}>
+    <View style={{ marginTop: 10, padding: 10, alignItems: "center" }}>
       <Text style={{ fontSize: fontSizes.h2 }}>Complete Your Profile</Text>
       <ScrollView style={styles.container}>
         <View style={styles.profileImageContainer}>
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
 
   container: {
     marginTop: 20,
-    backgroundColor: "white",
+    // backgroundColor: "g,
     // padding: 10,
     // borderWidth: 1,
     borderColor: "grey",

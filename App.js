@@ -25,6 +25,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import MyReports from "./Screens/reports/MyReports";
 import Medicines from "./Screens/medicines/Medicines";
 import MyAccount from "./Screens/my-account/MyAccount";
+import DoctorCard from "./Components/DoctorCard";
 
 const Stack = createStackNavigator();
 
@@ -63,6 +64,12 @@ function NavigationStack() {
         }}
       />
       <Stack.Screen
+        name="Doctor Card"
+        component={DoctorCard}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
         name="Book Appointment"
         component={BookingPage}
         options={{
@@ -82,6 +89,7 @@ function NavigationStack() {
         name="Hospital Details"
         component={HospitalDetails}
         options={{
+          headerShown: false,
           headerTitleAlign: "center",
           headerStyle: { backgroundColor: "#5B8DD3" },
         }}
@@ -212,6 +220,13 @@ function MyBottomTabNavigator() {
 
 export default function App() {
   return (
+    // <Provider store={store}>
+    //   <NavigationContainer>
+    //     <StatusBar backgroundColor="" />
+    //     <Profile />
+    //   </NavigationContainer>
+    // </Provider>
+
     <Provider store={store}>
       <NavigationContainer>
         <StatusBar backgroundColor="" />
