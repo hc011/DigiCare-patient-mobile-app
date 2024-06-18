@@ -33,7 +33,7 @@ export const addAppointment = async ({
       }),
     });
     let res = await response.json();
-
+    console.log("response", res);
     return [response, res.appointment_id, res.position];
   } catch (error) {
     console.error("API call failed", error);

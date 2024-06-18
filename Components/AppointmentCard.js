@@ -3,8 +3,14 @@ import { View, Text, StyleSheet, Image } from "react-native";
 import fontSizes from "../constants/fontSizes";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Button } from "react-native-paper";
+import { useSelector } from "react-redux";
 
 const AppointmentCard = ({ onCancelPress }) => {
+  const appointmentDetails = useSelector((state) => state.appointmentDetails);
+  const func = () => {
+    console.log(appointmentDetails);
+  };
+
   const appointment = {
     dateTime: "Jun 6, 2024 - 10:00 AM",
     doctorImage: "https://via.placeholder.com/150", // Placeholder image
@@ -57,6 +63,7 @@ const AppointmentCard = ({ onCancelPress }) => {
           }}
           contentStyle={{ padding: 8, alignItems: "center" }}
           labelStyle={{ fontSize: fontSizes.buttonLarge }}
+          onPress={func}
         >
           <Text
             style={{

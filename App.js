@@ -111,7 +111,7 @@ function NavigationStack() {
         }}
       />
       <Stack.Screen
-        name="Token Status"
+        name="Appointment Status"
         component={tokenPage}
         options={{
           headerTitleAlign: "center",

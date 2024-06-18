@@ -34,7 +34,7 @@ const HospitalList = (props) => {
   };
 
   const handleCheckStatus = () => {
-    props.navigation.navigate("Token Status");
+    props.navigation.navigate("Appointment Status");
   };
 
   return (

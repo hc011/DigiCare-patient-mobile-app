@@ -6,6 +6,7 @@ import {
   ScrollView,
   Image,
   Switch,
+  Alert,
 } from "react-native";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -31,11 +32,11 @@ function calculateAge(birthdate) {
 }
 
 const BookingPage = (props) => {
-  console.log(selectedDoctorSlice);
   const dispatch = useDispatch();
   const selectedDoctor = useSelector(
     (state) => state.doctor.selectedDoctorSlice
   );
+
   const userDetails = useSelector((state) => state.user.userDetails);
   const [bookingForSelf, setBookingForSelf] = useState(false);
   const [name, setName] = useState();
@@ -56,12 +57,17 @@ const BookingPage = (props) => {
       user: 1,
       cabinId: 1,
     });
-    console.log([response, appointmentId, position]);
+    // console.log([response, appointmentId, position]);
     if (appointmentId) {
-      dispatch(setAppointmentDetails({ appointmentId, position }));
+      dispatch(
+        setAppointmentDetails({ appointmentId, position, selectedDoctor })
+      );
+      console.log("here");
+      // props.navigation.pop(3);
+      props.navigation.navigate("Appointment Status");
+    } else {
+      Alert.alert("Appointment could not be completed.");
     }
-    props.navigation.pop(2);
-    props.navigation.navigate("Token Status");
   };
 
   const toggleSwitch = () => {
