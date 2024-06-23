@@ -5,18 +5,24 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Button } from "react-native-paper";
 import { useSelector } from "react-redux";
 
-const AppointmentCard = ({ onCancelPress }) => {
-  const appointmentDetails = useSelector((state) => state.appointmentDetails);
-  const func = () => {
-    console.log(appointmentDetails);
-  };
+const AppointmentCard = ({}) => {
+  var appd = { appointmentId: "" };
+  appd = useSelector((state) => state.appointmentDetails);
+  const doctorDetails = useSelector(
+    (state) => state.doctor.selectedDoctorSlice
+  );
+  // console.log(appd.appointmentId.slice(0, 5));
 
   const appointment = {
-    dateTime: "Jun 6, 2024 - 10:00 AM",
-    doctorImage: "https://via.placeholder.com/150", // Placeholder image
-    doctorName: "Dr. Jane Doe",
+    dateTime:
+      appd.appointmentId.slice(6, 16) +
+      " | Booking time - " +
+      appd.appointmentId.slice(17, 22),
+    doctorImage:
+      "https://th.bing.com/th/id/OIP.LczXdrMkR1M0DA0Q6diejQHaIH?w=167&h=183&c=7&r=0&o=5&dpr=1.1&pid=1.7",
+    doctorName: doctorDetails.name,
     address: "123 Main St, Anytown, CA 12345",
-    bookingId: "ABC123",
+    bookingId: appd.appointmentId.slice(0, 6),
   };
 
   return (
@@ -40,7 +46,10 @@ const AppointmentCard = ({ onCancelPress }) => {
             <View style={{ flexDirection: "row" }}>
               <MaterialIcons name="book-online" size={20} color="gray" />
               <Text style={styles.bookingId}>
-                Booking ID: {appointment.bookingId}
+                Booking ID:{" "}
+                <Text style={{ color: "black", fontWeight: "500" }}>
+                  {appointment.bookingId}
+                </Text>
               </Text>
             </View>
           </View>
@@ -63,7 +72,7 @@ const AppointmentCard = ({ onCancelPress }) => {
           }}
           contentStyle={{ padding: 8, alignItems: "center" }}
           labelStyle={{ fontSize: fontSizes.buttonLarge }}
-          onPress={func}
+          // onPress={func}
         >
           <Text
             style={{

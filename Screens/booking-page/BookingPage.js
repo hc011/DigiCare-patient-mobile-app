@@ -7,13 +7,13 @@ import {
   Image,
   Switch,
   Alert,
+  TextInput,
 } from "react-native";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { addAppointment } from "../../api/addAppointement";
 import { useDispatch } from "react-redux";
 import { setAppointmentDetails } from "../../storage/appointmentDetailsSlice";
-import { TextInput } from "react-native-paper";
 import fontSizes from "../../constants/fontSizes";
 import selectedDoctorSlice from "../../storage/selectedDoctorSlice";
 
@@ -38,6 +38,7 @@ const BookingPage = (props) => {
   );
 
   const userDetails = useSelector((state) => state.user.userDetails);
+  console.log(userDetails);
   const [bookingForSelf, setBookingForSelf] = useState(false);
   const [name, setName] = useState();
   const [reason, setReason] = useState("");
@@ -63,7 +64,7 @@ const BookingPage = (props) => {
         setAppointmentDetails({ appointmentId, position, selectedDoctor })
       );
       console.log("here");
-      // props.navigation.pop(3);
+      props.navigation.pop(3);
       props.navigation.navigate("Appointment Status");
     } else {
       Alert.alert("Appointment could not be completed.");
@@ -175,7 +176,7 @@ const BookingPage = (props) => {
           value={reason}
           onChangeText={setReason}
           placeholder="Brief description about your problem here."
-          multiline
+          // multiline
         />
 
         <TouchableOpacity style={styles.button} onPress={handleConfirm}>
@@ -253,6 +254,7 @@ const styles = StyleSheet.create({
     borderColor: "#CCC",
     borderWidth: 1,
     marginBottom: 20,
+    paddingTop: 10,
     paddingHorizontal: 10,
     borderRadius: 5,
     backgroundColor: "#FFFFFF",

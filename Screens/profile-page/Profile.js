@@ -2,8 +2,17 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import SearchBar from "../../Components/SearchBar";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { Button } from "react-native-paper";
+import fontSizes from "../../constants/fontSizes";
+import { useSelector } from "react-redux";
 
 const Profile = ({ navigation }) => {
+  const handleAppointmentStatus = () => {
+    navigation.navigate("Appointment Status");
+  };
+  var appointmentDet = { appointmentId: "" };
+  appointmentDet = useSelector((state) => state.appointmentDetails);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <SearchBar>Search for doctors & hospitals</SearchBar>
@@ -65,6 +74,26 @@ const Profile = ({ navigation }) => {
           <Text style={styles.tileText}>Medicines</Text>
         </Pressable>
       </View>
+
+      {appointmentDet.appointmentId && (
+        <View
+          style={{ flex: 1, justifyContent: "flex-end", alignItems: "center" }}
+        >
+          <Button
+            mode="contained"
+            style={{
+              borderRadius: 30,
+              backgroundColor: "#5B8DD3",
+              width: "100%",
+            }}
+            contentStyle={{ padding: 8, alignItems: "center" }}
+            labelStyle={{ fontSize: fontSizes.buttonLarge }}
+            onPress={handleAppointmentStatus}
+          >
+            Appointment Status
+          </Button>
+        </View>
+      )}
     </ScrollView>
   );
 };

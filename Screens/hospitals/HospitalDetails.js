@@ -143,8 +143,8 @@ const HospitalDetails = (props) => {
               // },
             }}
           >
-            <Tab.Screen name="Treatments" component={TreatmentsScreen} />
             <Tab.Screen name="Doctors" component={DoctorList} />
+            <Tab.Screen name="Treatments" component={TreatmentsScreen} />
             <Tab.Screen name="About" component={AboutScreen} />
           </Tab.Navigator>
         </View>

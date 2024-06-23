@@ -33,9 +33,9 @@ const HospitalList = (props) => {
     props.navigation.navigate("Hospital Details");
   };
 
-  const handleCheckStatus = () => {
-    props.navigation.navigate("Appointment Status");
-  };
+  // const handleCheckStatus = () => {
+  //   props.navigation.navigate("Appointment Status");
+  // };
 
   return (
     <View style={{ flex: 1, padding: 10 }}>
@@ -72,12 +72,12 @@ const HospitalList = (props) => {
           ))}
         </View>
       </ScrollView>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.floatingButton}
         onPress={handleCheckStatus}
       >
         <Text style={styles.buttonText}>Check Status</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

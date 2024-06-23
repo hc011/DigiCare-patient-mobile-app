@@ -19,11 +19,13 @@ import { register } from "../../api/register";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { format } from "date-fns";
 import validator from "validator";
-
+import { setUserDetailsSlice } from "../../storage/userDetailsSlice";
+import { useDispatch } from "react-redux";
 import fontSizes from "../../constants/fontSizes";
 
 const RegistrationPage = (props) => {
   const mobileSlice = useSelector((state) => state.mobile.mobileNumber);
+  const dispatch = useDispatch();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -53,6 +55,15 @@ const RegistrationPage = (props) => {
         password,
       });
       if (response.status === 201) {
+        dispatch(
+          setUserDetailsSlice({
+            dob: DOB,
+            email: email,
+            first_name: firstName,
+            last_name: lastName,
+            phone_number: mobileNumber,
+          })
+        );
         setIsLoading(false);
         props.navigation.navigate("Profile");
       } else if (response.status === 400) {

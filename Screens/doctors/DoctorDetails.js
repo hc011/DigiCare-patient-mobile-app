@@ -34,21 +34,30 @@ const DoctorDetails = (props) => {
             <Text style={styles.speciality}>
               {selectedDoctor.specialization}
             </Text>
-            <Text style={styles.rating}>
+            {/* <Text style={styles.rating}>
               🌟 {selectedDoctor.rating} | 200 Reviews{" "}
-            </Text>
+            </Text> */}
           </View>
         </View>
 
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-between",
-            // marginTop: 2,
+            justifyContent: "space-around",
+            // borderWidth: 1,
+            borderRadius: 20,
+            backgroundColor: "white",
+            marginTop: 20,
+            marginHorizontal: 5,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 6,
+            elevation: 1,
           }}
         >
           <CircularIconCard
-            name="75,000+ patients"
+            name="75,000+ "
             iconName="group"
             color="#5B8DD3"
             size={30}
@@ -141,7 +150,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 70,
-    borderWidth: 5,
+    // borderWidth: 5,
     borderColor: "#fff",
   },
   name: {
@@ -175,7 +184,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
-    marginTop: 20,
+    marginTop: 10,
     marginBottom: 10,
   },
   infoText: {

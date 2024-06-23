@@ -4,11 +4,11 @@ import fontSizes from "../../constants/fontSizes";
 
 const TreatmentsScreen = (props) => {
   const treatments = [
-    "Treatment 1",
-    "Treatment 2",
-    "Treatment 3",
-    "Treatment 4",
-    "Treatment 5",
+    "General Consultation",
+    "Neurology",
+    "Psychiatry",
+    "ENT",
+    "Cardiology",
   ];
 
   return (
@@ -16,7 +16,7 @@ const TreatmentsScreen = (props) => {
       <Text
         style={{
           fontSize: fontSizes.h4,
-          fontWeight: "400",
+          fontWeight: "600",
           marginHorizontal: 20,
           marginTop: 10,
         }}
@@ -25,9 +25,18 @@ const TreatmentsScreen = (props) => {
       </Text>
       <ScrollView style={{ paddingHorizontal: 20 }}>
         {treatments.map((treatment) => (
-          <Text key={treatment} style={styles.treatmentList}>
-            {treatment}
-          </Text>
+          <View
+            key={treatment}
+            style={{
+              borderWidth: 0.5,
+              margin: 10,
+              padding: 10,
+              borderRadius: 10,
+              backgroundColor: "white",
+            }}
+          >
+            <Text style={styles.treatmentList}>{treatment}</Text>
+          </View>
         ))}
       </ScrollView>
     </View>
